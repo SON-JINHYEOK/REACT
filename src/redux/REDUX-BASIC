@@ -1,0 +1,86 @@
+// createStore : storeを作る　
+// storeは、１つのみ作成する
+import { createStore } from 'redux';
+
+//初期値
+const initialState = {
+    counter: 0,
+    text: '',
+    list: []
+};
+
+//Action type 定義
+const INCREASE = 'INCREASE';
+const DECREASE = 'DECREASE';
+const CHANGE_TEXT = 'CHANGE_TEXT';
+const ADD_TO_LIST = 'ADD_TO_LIST';
+
+//ActionCreator 
+//typeの値が必須
+const increase = () => ({
+    type : INCREASE
+});
+const decrease = () => ({
+    type : DECREASE
+});
+
+const changeText = text => ({
+    type : CHANGE_TEXT,
+    text : text //text (type以外のフィルドも追加できる)
+});
+
+const addToList = item => ({
+    type : ADD_TO_LIST,
+    item : item //itemに省略可能
+});
+
+// reducer : ActionCreatorのオブジェクトを参照し、新しいStateを作れる
+// ＊注意 : immutable
+
+function reducer(state=initialState, action) {
+    //stateの初期値を initialStateに指定
+    switch(action.type) {
+        case INCREASE : 
+            return {
+                ...state,
+                counter : state.counter + 1
+            };
+        case DECREASE :
+            return {
+                ...state,
+                counter : state.counter - 1
+            };
+        case CHANGE_TEXT :
+            return {
+                ...state,
+                text : action.text
+            };
+        case ADD_TO_LIST : 
+            return {
+                ...state,
+                item : action.item
+            };
+        default:
+            return state;
+    }
+}
+
+// store 作成
+// getState() : 現在store中にある、stateを照会する
+const store = createStore(reducer);
+console.log(store.getState());
+
+// store中のstateが更新された時に呼び出されるlistener
+const listener = () => {
+    const state = store.getState();
+    console.log(state);
+} 
+
+// subscribeを解除したい時は、unsubscribe()を呼び出す
+const unsubscribe = store.subscribe(listener);
+
+// actionをdispatchする
+store.dispatch(increase());
+store.dispatch(decrease());
+store.dispatch(changeText('First Redux'));
+store.dispatch(addToList({id : 1 , text: 'HELLO!!!'}));
